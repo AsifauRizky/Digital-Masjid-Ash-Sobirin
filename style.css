@@ -1,0 +1,113 @@
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
+  body { background:#f4f7f2; color:#2c3e2d; line-height:1.6; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0f5132 0%, #198754 50%, #d4af37 100%);
+    color:#fff; padding:30px 20px; text-align:center;
+    box-shadow:0 4px 15px rgba(0,0,0,0.2);
+    position:relative; overflow:hidden;
+  }
+  header::before {
+    content:"☪"; position:absolute; font-size:200px; opacity:0.08;
+    top:-30px; right:-20px;
+  }
+  header h1 { font-size:2.4rem; letter-spacing:2px; margin-bottom:5px; }
+  header p { font-size:1rem; opacity:0.95; }
+  header .arabic { font-size:1.8rem; font-family:'Traditional Arabic', serif; margin-bottom:5px; }
+
+  /* NAVIGATION */
+  nav {
+    background:#0f5132; display:flex; flex-wrap:wrap; justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15); position:sticky; top:0; z-index:100;
+  }
+  nav button {
+    background:transparent; color:#fff; border:none; padding:15px 22px;
+    cursor:pointer; font-size:0.95rem; transition:0.3s; border-bottom:3px solid transparent;
+  }
+  nav button:hover { background:rgba(255,255,255,0.1); }
+  nav button.active { background:#d4af37; color:#0f5132; font-weight:bold; border-bottom:3px solid #fff; }
+
+  /* MAIN */
+  main { max-width:1200px; margin:30px auto; padding:0 20px; }
+  .section { display:none; animation:fade 0.5s; }
+  .section.active { display:block; }
+  @keyframes fade { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+  .card {
+    background:#fff; border-radius:12px; padding:25px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08); margin-bottom:25px;
+    border-top:4px solid #198754;
+  }
+  .card h2 { color:#0f5132; margin-bottom:15px; border-bottom:2px solid #d4af37; padding-bottom:8px; }
+  .card h3 { color:#198754; margin:15px 0 10px; }
+
+  /* BERANDA */
+  .welcome { text-align:center; padding:20px; }
+  .welcome p { font-size:1.05rem; margin:10px 0; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:15px; margin-top:20px; }
+  .stat-box {
+    background:linear-gradient(135deg,#198754,#0f5132); color:#fff;
+    padding:20px; border-radius:10px; text-align:center;
+  }
+  .stat-box .num { font-size:2rem; font-weight:bold; color:#d4af37; }
+  .stat-box .label { font-size:0.9rem; margin-top:5px; }
+
+  /* FORM */
+  .form-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:12px; }
+  input, select, textarea {
+    width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;
+    font-size:0.95rem; transition:0.3s;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:#198754; box-shadow:0 0 0 3px rgba(25,135,84,0.2); }
+  button.btn {
+    background:#198754; color:#fff; border:none; padding:10px 20px;
+    border-radius:6px; cursor:pointer; font-size:0.95rem; transition:0.3s;
+  }
+  button.btn:hover { background:#0f5132; }
+  button.btn-danger { background:#dc3545; padding:6px 12px; font-size:0.85rem; }
+  button.btn-danger:hover { background:#a71d2a; }
+  button.btn-edit { background:#d4af37; color:#0f5132; padding:6px 12px; font-size:0.85rem; font-weight:bold; }
+
+  /* TABLE */
+  table { width:100%; border-collapse:collapse; margin-top:15px; background:#fff; }
+  th { background:#0f5132; color:#fff; padding:12px; text-align:left; }
+  td { padding:10px 12px; border-bottom:1px solid #eee; }
+  tr:hover { background:#f8faf8; }
+  .table-wrap { overflow-x:auto; }
+
+  /* PENGURUS GRID */
+  .pengurus-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-top:15px; }
+  .pengurus-card {
+    background:linear-gradient(135deg,#fff,#f0f7f2); padding:18px;
+    border-radius:10px; border-left:4px solid #d4af37;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  }
+  .pengurus-card .jabatan { color:#d4af37; font-weight:bold; font-size:0.9rem; text-transform:uppercase; }
+  .pengurus-card .nama { font-size:1.2rem; color:#0f5132; margin:5px 0; font-weight:bold; }
+  .pengurus-card .kontak { font-size:0.85rem; color:#666; }
+
+  /* KEUANGAN */
+  .saldo-box {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; margin-bottom:20px;
+  }
+  .saldo-item { padding:20px; border-radius:10px; color:#fff; text-align:center; }
+  .saldo-item.pemasukan { background:linear-gradient(135deg,#198754,#0f5132); }
+  .saldo-item.pengeluaran { background:linear-gradient(135deg,#dc3545,#a71d2a); }
+  .saldo-item.saldo { background:linear-gradient(135deg,#d4af37,#b8941f); color:#0f5132; }
+  .saldo-item .angka { font-size:1.6rem; font-weight:bold; margin-top:8px; }
+  .saldo-item .judul { font-size:0.9rem; opacity:0.9; }
+
+  .badge { padding:3px 10px; border-radius:12px; font-size:0.8rem; font-weight:bold; }
+  .badge-in { background:#d1f2e0; color:#0f5132; }
+  .badge-out { background:#f8d7da; color:#721c24; }
+
+  footer {
+    background:#0f5132; color:#fff; text-align:center; padding:20px; margin-top:40px;
+  }
+  footer .arabic { font-size:1.3rem; color:#d4af37; margin-bottom:5px; }
+
+  @media(max-width:600px){
+    header h1 { font-size:1.6rem; }
+    nav button { padding:12px 14px; font-size:0.85rem; }
+  }

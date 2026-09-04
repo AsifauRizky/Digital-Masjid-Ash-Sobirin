@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masjid Ashobirin - Sistem Informasi Pengurus</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
+  body { background:#f4f7f2; color:#2c3e2d; line-height:1.6; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0f5132 0%, #198754 50%, #d4af37 100%);
+    color:#fff; padding:30px 20px; text-align:center;
+    box-shadow:0 4px 15px rgba(0,0,0,0.2);
+    position:relative; overflow:hidden;
+  }
+  header::before {
+    content:"☪"; position:absolute; font-size:200px; opacity:0.08;
+    top:-30px; right:-20px;
+  }
+  header h1 { font-size:2.4rem; letter-spacing:2px; margin-bottom:5px; }
+  header p { font-size:1rem; opacity:0.95; }
+  header .arabic { font-size:1.8rem; font-family:'Traditional Arabic', serif; margin-bottom:5px; }
+
+  /* NAVIGATION */
+  nav {
+    background:#0f5132; display:flex; flex-wrap:wrap; justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15); position:sticky; top:0; z-index:100;
+  }
+  nav button {
+    background:transparent; color:#fff; border:none; padding:15px 22px;
+    cursor:pointer; font-size:0.95rem; transition:0.3s; border-bottom:3px solid transparent;
+  }
+  nav button:hover { background:rgba(255,255,255,0.1); }
+  nav button.active { background:#d4af37; color:#0f5132; font-weight:bold; border-bottom:3px solid #fff; }
+
+  /* MAIN */
+  main { max-width:1200px; margin:30px auto; padding:0 20px; }
+  .section { display:none; animation:fade 0.5s; }
+  .section.active { display:block; }
+  @keyframes fade { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+  .card {
+    background:#fff; border-radius:12px; padding:25px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08); margin-bottom:25px;
+    border-top:4px solid #198754;
+  }
+  .card h2 { color:#0f5132; margin-bottom:15px; border-bottom:2px solid #d4af37; padding-bottom:8px; }
+  .card h3 { color:#198754; margin:15px 0 10px; }
+
+  /* BERANDA */
+  .welcome { text-align:center; padding:20px; }
+  .welcome p { font-size:1.05rem; margin:10px 0; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:15px; margin-top:20px; }
+  .stat-box {
+    background:linear-gradient(135deg,#198754,#0f5132); color:#fff;
+    padding:20px; border-radius:10px; text-align:center;
+  }
+  .stat-box .num { font-size:2rem; font-weight:bold; color:#d4af37; }
+  .stat-box .label { font-size:0.9rem; margin-top:5px; }
+
+  /* FORM */
+  .form-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:12px; }
+  input, select, textarea {
+    width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;
+    font-size:0.95rem; transition:0.3s;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:#198754; box-shadow:0 0 0 3px rgba(25,135,84,0.2); }
+  button.btn {
+    background:#198754; color:#fff; border:none; padding:10px 20px;
+    border-radius:6px; cursor:pointer; font-size:0.95rem; transition:0.3s;
+  }
+  button.btn:hover { background:#0f5132; }
+  button.btn-danger { background:#dc3545; padding:6px 12px; font-size:0.85rem; }
+  button.btn-danger:hover { background:#a71d2a; }
+  button.btn-edit { background:#d4af37; color:#0f5132; padding:6px 12px; font-size:0.85rem; font-weight:bold; }
+
+  /* TABLE */
+  table { width:100%; border-collapse:collapse; margin-top:15px; background:#fff; }
+  th { background:#0f5132; color:#fff; padding:12px; text-align:left; }
+  td { padding:10px 12px; border-bottom:1px solid #eee; }
+  tr:hover { background:#f8faf8; }
+  .table-wrap { overflow-x:auto; }
+
+  /* PENGURUS GRID */
+  .pengurus-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:15px; margin-top:15px; }
+  .pengurus-card {
+    background:linear-gradient(135deg,#fff,#f0f7f2); padding:18px;
+    border-radius:10px; border-left:4px solid #d4af37;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  }
+  .pengurus-card .jabatan { color:#d4af37; font-weight:bold; font-size:0.9rem; text-transform:uppercase; }
+  .pengurus-card .nama { font-size:1.2rem; color:#0f5132; margin:5px 0; font-weight:bold; }
+  .pengurus-card .kontak { font-size:0.85rem; color:#666; }
+
+  /* KEUANGAN */
+  .saldo-box {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; margin-bottom:20px;
+  }
+  .saldo-item { padding:20px; border-radius:10px; color:#fff; text-align:center; }
+  .saldo-item.pemasukan { background:linear-gradient(135deg,#198754,#0f5132); }
+  .saldo-item.pengeluaran { background:linear-gradient(135deg,#dc3545,#a71d2a); }
+  .saldo-item.saldo { background:linear-gradient(135deg,#d4af37,#b8941f); color:#0f5132; }
+  .saldo-item .angka { font-size:1.6rem; font-weight:bold; margin-top:8px; }
+  .saldo-item .judul { font-size:0.9rem; opacity:0.9; }
+
+  .badge { padding:3px 10px; border-radius:12px; font-size:0.8rem; font-weight:bold; }
+  .badge-in { background:#d1f2e0; color:#0f5132; }
+  .badge-out { background:#f8d7da; color:#721c24; }
+
+  footer {
+    background:#0f5132; color:#fff; text-align:center; padding:20px; margin-top:40px;
+  }
+  footer .arabic { font-size:1.3rem; color:#d4af37; margin-bottom:5px; }
+
+  @media(max-width:600px){
+    header h1 { font-size:1.6rem; }
+    nav button { padding:12px 14px; font-size:0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="arabic">مَسْجِدُ الصَّابِرِيْنَ</div>
+  <h1>MASJID ASHOBIRIN</h1>
+  <p>Sistem Informasi Kepengurusan & Keuangan Masjid</p>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="beranda">🏠 Beranda</button>
+  <button class="tab-btn" data-tab="pengurus"> 👥 Pengurus</button>
+  <button class="tab-btn" data-tab="tahlilan"> 📿 Tahlilan Jumat</button>
+  <button class="tab-btn" data-tab="jumat"> 🕌 Petugas Jumat</button>
+  <button class="tab-btn" data-tab="keuangan"> 💰 Keuangan</button>
+</nav>
+
+<main>
+
+  <!-- BERANDA -->
+  <section id="beranda" class="section active">
+    <div class="card welcome">
+      <h2>Assalamu'alaikum Warahmatullahi Wabarakatuh</h2>
+      <p>Selamat datang di Sistem Informasi <b>Masjid Ashobirin</b>. Website ini berisi informasi lengkap mengenai kepengurusan, jadwal kegiatan rutin, petugas ibadah Jumat, serta laporan keuangan masjid.</p>
+      <p><i>"Masjid adalah rumah Allah di bumi, maka barangsiapa memanggil kepada Allah di rumahnya (masjid), niscaya Allah akan membalas panggilannya di surga."</i></p>
+      <div class="stats">
+        <div class="stat-box"><div class="num" id="stPengurus">0</div><div class="label">Jumlah Pengurus</div></div>
+        <div class="stat-box"><div class="num" id="stTahlil">0</div><div class="label">Jadwal Tahlilan/Bulan</div></div>
+        <div class="stat-box"><div class="num" id="stJumat">0</div><div class="label">Jadwal Jumat/Bulan</div></div>
+        <div class="stat-box"><div class="num" id="stTrans">0</div><div class="label">Total Transaksi</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENGURUS -->
+  <section id="pengurus" class="section">
+    <div class="card">
+      <h2>Struktur Kepengurusan Masjid</h2>
+      <h3>Tambah / Ubah Data Pengurus</h3>
+      <div class="form-row">
+        <input type="text" id="pJabatan" placeholder="Jabatan (contoh: Ketua DKM)">
+        <input type="text" id="pNama" placeholder="Nama Lengkap">
+        <input type="text" id="pKontak" placeholder="No. HP / Alamat">
+      </div>
+      <button class="btn" onclick="simpanPengurus()">💾 Simpan Pengurus</button>
+      <button class="btn" style="background:#6c757d" onclick="loadDefaultPengurus()">🔄 Muat Data Contoh</button>
+
+      <h3 style="margin-top:25px">Daftar Pengurus</h3>
+      <div class="pengurus-grid" id="listPengurus"></div>
+    </div>
+  </section>
+
+  <!-- TAHLILAN -->
+  <section id="tahlilan" class="section">
+    <div class="card">
+      <h2>Jadwal Tahlilan Malam Jumat (Bulanan)</h2>
+      <p style="color:#666;margin-bottom:10px">Malam Jumat = malam antara hari Kamis dan Jumat. Tahlilan rutin dilaksanakan ba'da Maghrib atau Isya.</p>
+      <h3>Tambah Jadwal Tahlilan</h3>
+      <div class="form-row">
+        <input type="date" id="tTanggal">
+        <input type="text" id="tPetugas" placeholder="Nama Petugas / Ustaz">
+        <input type="text" id="tLokasi" placeholder="Rumah / Tempat" value="Masjid Ashobirin">
+        <input type="time" id="tWaktu" value="19:30">
+      </div>
+      <button class="btn" onclick="simpanTahlil()">💾 Simpan Jadwal</button>
+      <button class="btn" style="background:#6c757d" onclick="generateTahlilBulan()">📅 Generate 4 Jumat Bulan Ini</button>
+
+      <h3 style="margin-top:25px">Daftar Jadwal Tahlilan</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tanggal</th><th>Hari</th><th>Petugas/Ustaz</th><th>Lokasi</th><th>Waktu</th><th>Aksi</th></tr></thead>
+          <tbody id="listTahlil"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- JUMAT -->
+  <section id="jumat" class="section">
+    <div class="card">
+      <h2>Jadwal Petugas Sholat Jumat (Bulanan)</h2>
+      <p style="color:#666;margin-bottom:10px">Termasuk Khatib, Imam, Muadzin, dan Bilal untuk setiap Jumat dalam sebulan.</p>
+      <h3>Tambah Jadwal Jumat</h3>
+      <div class="form-row">
+        <input type="date" id="jTanggal">
+        <input type="text" id="jKhatib" placeholder="Nama Khatib">
+        <input type="text" id="jImam" placeholder="Nama Imam">
+        <input type="text" id="jMuadzin" placeholder="Nama Muadzin">
+        <input type="text" id="jBilal" placeholder="Nama Bilal">
+      </div>
+      <button class="btn" onclick="simpanJumat()">💾 Simpan Jadwal</button>
+      <button class="btn" style="background:#6c757d" onclick="generateJumatBulan()">📅 Generate 4 Jumat Bulan Ini</button>
+
+      <h3 style="margin-top:25px">Daftar Petugas Jumat</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tanggal</th><th>Khatib</th><th>Imam</th><th>Muadzin</th><th>Bilal</th><th>Aksi</th></tr></thead>
+          <tbody id="listJumat"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEUANGAN -->
+  <section id="keuangan" class="section">
+    <div class="card">
+      <h2>Laporan Keuangan Masjid</h2>
+      <div class="saldo-box">
+        <div class="saldo-item pemasukan"><div class="judul">Total Pemasukan</div><div class="angka" id="totIn">Rp 0</div></div>
+        <div class="saldo-item pengeluaran"><div class="judul">Total Pengeluaran</div><div class="angka" id="totOut">Rp 0</div></div>
+        <div class="saldo-item saldo"><div class="judul">Saldo Akhir</div><div class="angka" id="totSaldo">Rp 0</div></div>
+      </div>
+
+      <h3>Input Transaksi</h3>
+      <div class="form-row">
+        <input type="date" id="kTanggal">
+        <select id="kJenis">
+          <option value="pemasukan">Pemasukan</option>
+          <option value="pengeluaran">Pengeluaran</option>
+        </select>
+        <input type="text" id="kKategori" placeholder="Kategori (Infaq, Gaji, Listrik, dll)">
+        <input type="text" id="kKeterangan" placeholder="Keterangan">
+        <input type="number" id="kJumlah" placeholder="Jumlah (Rp)">
+      </div>
+      <button class="btn" onclick="simpanKeuangan()">💾 Simpan Transaksi</button>
+      <button class="btn" style="background:#6c757d" onclick="loadDefaultKeuangan()">🔄 Muat Data Contoh</button>
+
+      <h3 style="margin-top:25px">Riwayat Transaksi</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Keterangan</th><th>Jumlah</th><th>Aksi</th></tr></thead>
+          <tbody id="listKeuangan"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="arabic">جَزَاكُمُ اللهُ خَيْرًا</div>
+  <p>&copy; 2026 Masjid Ashobirin - Sistem Informasi Pengurus</p>
+  <p style="font-size:0.85rem;opacity:0.8">Semoga menjadi amal jariyah bagi kita semua 🤲</p>
+</footer>
+
+<script>
+  // ========== TAB NAVIGATION ==========
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ========== STORAGE HELPERS ==========
+  const get = k => JSON.parse(localStorage.getItem(k)||'[]');
+  const set = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+  const rupiah = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+  const hariID = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const formatTgl = s => { const d=new Date(s); return d.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}); };
+
+  // ========== PENGURUS ==========
+  function simpanPengurus(){
+    const jabatan=document.getElementById('pJabatan').value.trim();
+    const nama=document.getElementById('pNama').value.trim();
+    const kontak=document.getElementById('pKontak').value.trim();
+    if(!jabatan||!nama){ alert('Jabatan dan Nama wajib diisi!'); return; }
+    const data=get('pengurus'); data.push({jabatan,nama,kontak}); set('pengurus',data);
+    document.getElementById('pJabatan').value=''; document.getElementById('pNama').value=''; document.getElementById('pKontak').value='';
+    renderPengurus();
+  }
+  function hapusPengurus(i){ if(confirm('Hapus pengurus ini?')){ const d=get('pengurus'); d.splice(i,1); set('pengurus',d); renderPengurus(); } }
+  function renderPengurus(){
+    const data=get('pengurus');
+    const el=document.getElementById('listPengurus');
+    if(data.length===0){ el.innerHTML='<p style="color:#888">Belum ada data pengurus.</p>'; }
+    else {
+      el.innerHTML=data.map((p,i)=>`
+        <div class="pengurus-card">
+          <div class="jabatan">${p.jabatan}</div>
+          <div class="nama">${p.nama}</div>
+          <div class="kontak">${p.kontak||'-'}</div>
+          <button class="btn btn-danger" style="margin-top:8px" onclick="hapusPengurus(${i})">🗑 Hapus</button>
+        </div>`).join('');
+    }
+    document.getElementById('stPengurus').textContent=data.length;
+  }
+  function loadDefaultPengurus(){
+    set('pengurus',[
+      {jabatan:'Ketua DKM',nama:'H. Ahmad Syafii',kontak:'0812-3456-7890'},
+      {jabatan:'Wakil Ketua',nama:'Bpk. Sutrisno',kontak:'0813-1111-2222'},
+      {jabatan:'Sekretaris',nama:'Ust. Fauzan',kontak:'0856-3333-4444'},
+      {jabatan:'Bendahara',nama:'Bpk. Hidayat',kontak:'0878-5555-6666'},
+      {jabatan:'Ketua Bidang Dakwah',nama:'Ust. Ridwan',kontak:'0821-7777-8888'},
+      {jabatan:'Ketua Bidang Keuangan',nama:'Bpk. Mahmud',kontak:'0852-9999-0000'},
+      {jabatan:'Ketua Bidang Pemakmuran',nama:'Bpk. Basuki',kontak:'0813-1234-5678'},
+      {jabatan:'Marbot / Penjaga Masjid',nama:'Pak Karman',kontak:'0822-4321-8765'}
+    ]);
+    renderPengurus();
+  }
+
+  // ========== TAHLILAN ==========
+  function simpanTahlil(){
+    const tanggal=document.getElementById('tTanggal').value;
+    const petugas=document.getElementById('tPetugas').value.trim();
+    const lokasi=document.getElementById('tLokasi').value.trim();
+    const waktu=document.getElementById('tWaktu').value;
+    if(!tanggal||!petugas){ alert('Tanggal dan Petugas wajib diisi!'); return; }
+    const data=get('tahlil'); data.push({tanggal,petugas,lokasi,waktu}); set('tahlil',data);
+    document.getElementById('tPetugas').value='';
+    renderTahlil();
+  }
+  function hapusTahlil(i){ if(confirm('Hapus jadwal?')){ const d=get('tahlil'); d.splice(i,1); set('tahlil',d); renderTahlil(); } }
+  function renderTahlil(){
+    const data=get('tahlil').sort((a,b)=>new Date(a.tanggal)-new Date(b.tanggal));
+    const el=document.getElementById('listTahlil');
+    if(data.length===0){ el.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888">Belum ada jadwal.</td></tr>'; }
+    else {
+      el.innerHTML=data.map((t,i)=>`
+        <tr>
+          <td>${formatTgl(t.tanggal)}</td>
+          <td>${hariID[new Date(t.tanggal).getDay()]}</td>
+          <td><b>${t.petugas}</b></td>
+          <td>${t.lokasi||'-'}</td>
+          <td>${t.waktu||'-'}</td>
+          <td><button class="btn btn-danger" onclick="hapusTahlil(${i})">🗑</button></td>
+        </tr>`).join('');
+    }
+    document.getElementById('stTahlil').textContent=data.length;
+  }
+  function generateTahlilBulan(){
+    const now=new Date(); const y=now.getFullYear(), m=now.getMonth();
+    const jumat=[];
+    for(let d=1; d<=31; d++){
+      const dt=new Date(y,m,d);
+      if(dt.getMonth()!==m) break;
+      if(dt.getDay()===5) jumat.push(dt); // Jumat
+    }
+    const data=get('tahlil');
+    jumat.forEach((dt,idx)=>{
+      const tgl=dt.toISOString().split('T')[0];
+      if(!data.find(x=>x.tanggal===tgl)){
+        data.push({
+          tanggal:tgl,
+          petugas:'Ust. '+['Abdullah','Muhammad','Hasan','Ibrahim'][idx%4],
+          lokasi:'Masjid Ashobirin',
+          waktu:'19:30'
+        });
+      }
+    });
+    set('tahlil',data); renderTahlil();
+    alert('Berhasil generate '+jumat.length+' jadwal Jumat bulan ini!');
+  }
+
+  // ========== JUMAT ==========
+  function simpanJumat(){
+    const tanggal=document.getElementById('jTanggal').value;
+    const khatib=document.getElementById('jKhatib').value.trim();
+    const imam=document.getElementById('jImam').value.trim();
+    const muadzin=document.getElementById('jMuadzin').value.trim();
+    const bilal=document.getElementById('jBilal').value.trim();
+    if(!tanggal||!khatib){ alert('Tanggal dan Khatib wajib diisi!'); return; }
+    const data=get('jumat'); data.push({tanggal,khatib,imam,muadzin,bilal}); set('jumat',data);
+    ['jKhatib','jImam','jMuadzin','jBilal'].forEach(id=>document.getElementById(id).value='');
+    renderJumat();
+  }
+  function hapusJumat(i){ if(confirm('Hapus jadwal?')){ const d=get('jumat'); d.splice(i,1); set('jumat',d); renderJumat(); } }
+  function renderJumat(){
+    const data=get('jumat').sort((a,b)=>new Date(a.tanggal)-new Date(b.tanggal));
+    const el=document.getElementById('listJumat');
+    if(data.length===0){ el.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888">Belum ada jadwal.</td></tr>'; }
+    else {
+      el.innerHTML=data.map((t,i)=>`
+        <tr>
+          <td>${formatTgl(t.tanggal)}</td>
+          <td><b>${t.khatib}</b></td>
+          <td>${t.imam||'-'}</td>
+          <td>${t.muadzin||'-'}</td>
+          <td>${t.bilal||'-'}</td>
+          <td><button class="btn btn-danger" onclick="hapusJumat(${i})">🗑</button></td>
+        </tr>`).join('');
+    }
+    document.getElementById('stJumat').textContent=data.length;
+  }
+  function generateJumatBulan(){
+    const now=new Date(); const y=now.getFullYear(), m=now.getMonth();
+    const jumat=[];
+    for(let d=1; d<=31; d++){
+      const dt=new Date(y,m,d);
+      if(dt.getMonth()!==m) break;
+      if(dt.getDay()===5) jumat.push(dt);
+    }
+    const khotib=['Ust. Ahmad','Ust. Fauzan','Ust. Ridwan','Ust. Hasan'];
+    const imam=['Ust. Abdullah','Ust. Muhammad','Ust. Ibrahim','Ust. Yusuf'];
+    const muadzin=['Bilal Amin','Bilal Zaid','Bilal Umar','Bilal Khalid'];
+    const bilal=['H. Mahmud','H. Basuki','Bpk. Hidayat','Bpk. Sutrisno'];
+    const data=get('jumat');
+    jumat.forEach((dt,idx)=>{
+      const tgl=dt.toISOString().split('T')[0];
+      if(!data.find(x=>x.tanggal===tgl)){
+        data.push({
+          tanggal:tgl,
+          khatib:khotib[idx%4], imam:imam[idx%4],
+          muadzin:muadzin[idx%4], bilal:bilal[idx%4]
+        });
+      }
+    });
+    set('jumat',data); renderJumat();
+    alert('Berhasil generate '+jumat.length+' jadwal Jumat bulan ini!');
+  }
+
+  // ========== KEUANGAN ==========
+  function simpanKeuangan(){
+    const tanggal=document.getElementById('kTanggal').value;
+    const jenis=document.getElementById('kJenis').value;
+    const kategori=document.getElementById('kKategori').value.trim();
+    const keterangan=document.getElementById('kKeterangan').value.trim();
+    const jumlah=Number(document.getElementById('kJumlah').value);
+    if(!tanggal||!kategori||!jumlah){ alert('Lengkapi data transaksi!'); return; }
+    const data=get('keuangan'); data.push({tanggal,jenis,kategori,keterangan,jumlah}); set('keuangan',data);
+    document.getElementById('kKategori').value=''; document.getElementById('kKeterangan').value=''; document.getElementById('kJumlah').value='';
+    renderKeuangan();
+  }
+  function hapusKeuangan(i){ if(confirm('Hapus transaksi?')){ const d=get('keuangan'); d.splice(i,1); set('keuangan',d); renderKeuangan(); } }
+  function renderKeuangan(){
+    const data=get('keuangan').sort((a,b)=>new Date(a.tanggal)-new Date(b.tanggal));
+    const el=document.getElementById('listKeuangan');
+    let totalIn=0, totalOut=0;
+    if(data.length===0){ el.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888">Belum ada transaksi.</td></tr>'; }
+    else {
+      el.innerHTML=data.map((t,i)=>{
+        if(t.jenis==='pemasukan') totalIn+=t.jumlah; else totalOut+=t.jumlah;
+        return `
+        <tr>
+          <td>${formatTgl(t.tanggal)}</td>
+          <td><span class="badge ${t.jenis==='pemasukan'?'badge-in':'badge-out'}">${t.jenis.toUpperCase()}</span></td>
+          <td>${t.kategori}</td>
+          <td>${t.keterangan||'-'}</td>
+          <td style="color:${t.jenis==='pemasukan'?'#0f5132':'#a71d2a'};font-weight:bold">
+            ${t.jenis==='pemasukan'?'+':'-'} ${rupiah(t.jumlah)}
+          </td>
+          <td><button class="btn btn-danger" onclick="hapusKeuangan(${i})">🗑</button></td>
+        </tr>`;
+      }).join('');
+    }
+    document.getElementById('totIn').textContent=rupiah(totalIn);
+    document.getElementById('totOut').textContent=rupiah(totalOut);
+    document.getElementById('totSaldo').textContent=rupiah(totalIn-totalOut);
+    document.getElementById('stTrans').textContent=data.length;
+  }
+  function loadDefaultKeuangan(){
+    const now=new Date(); const y=now.getFullYear(), m=now.getMonth();
+    set('keuangan',[
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-01`,jenis:'pemasukan',kategori:'Infaq Jumat Minggu 1',keterangan:'Kotak Infaq',jumlah:2500000},
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-03`,jenis:'pengeluaran',kategori:'Listrik',keterangan:'Tagihan bulan ini',jumlah:450000},
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-05`,jenis:'pengeluaran',kategori:'Kebersihan',keterangan:'Gaji marbot & kebersihan',jumlah:800000},
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-08`,jenis:'pemasukan',kategori:'Infaq Jumat Minggu 2',keterangan:'Kotak Infaq',jumlah:2800000},
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-10`,jenis:'pemasukan',kategori:'Donatur',keterangan:'H. Ahmad - Renovasi',jumlah:5000000},
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-12`,jenis:'pengeluaran',kategori:'Konsumsi',keterangan:'Tahlilan & Pengajian',jumlah:350000},
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-15`,jenis:'pemasukan',kategori:'Infaq Jumat Minggu 3',keterangan:'Kotak Infaq',jumlah:2650000},
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-18`,jenis:'pengeluaran',kategori:'Perawatan',keterangan:'Perbaikan sound system',jumlah:1200000},
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-22`,jenis:'pemasukan',kategori:'Infaq Jumat Minggu 4',keterangan:'Kotak Infaq',jumlah:2900000},
+      {tanggal:`${y}-${String(m+1).padStart(2,'0')}-25`,jenis:'pengeluaran',kategori:'Dakwah',keterangan:'Honor Ustaz & Tahlilan',jumlah:600000}
+    ]);
+    renderKeuangan();
+  }
+
+  // ========== INIT ==========
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('tTanggal').value=today;
+  document.getElementById('jTanggal').value=today;
+  document.getElementById('kTanggal').value=today;
+
+  renderPengurus();
+  renderTahlil();
+  renderJumat();
+  renderKeuangan();
+</script>
+</body>
+</html>
